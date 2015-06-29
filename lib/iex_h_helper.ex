@@ -43,8 +43,8 @@ defmodule Iex.HHelper do
   def h(module) when is_atom(module) do
     case Code.ensure_loaded(module) do
       {:module, _} ->
-        Iex.HHelper.get_docs(module,@opts) |> 
-        Enum.map( fn { header, doc } -> print_doc(header, doc) end )
+        Iex.HHelper.get_docs(module, @helpers, @opts) |>
+        Enum.map( fn { _status, {header, doc}} -> print_doc(header, doc) end )
       {:error, reason} ->
         puts_error("Could not load module #{inspect module}, got: #{reason}")
     end
@@ -127,17 +127,21 @@ defmodule Iex.HHelper do
   @doc """
   Map over module list and return a list of header, doc tuples.
   """
-  def get_docs(module) do
-    case @opts do 
+  def get_docs(module,helpers,opts) do
+    case opts do 
       :first -> 
-        @helpers |> Enum.find_value( fn(mod) -> can_help(mod,module) end)
+        doc_list = helpers |> Enum.find_value( fn(mod) -> can_help(mod,module) end)
+        case doc_list do 
+          nil -> [{:not_found,{default_header(module),"No documentation found for #{inspect module}"}}]
+          -   -> doc_list
+        end 
       _ -> 
-        @helpers |> Enum.map( fn(mod) -> mod.documentation(module) end)
+        helpers |> Enum.map( fn(mod) -> mod.documentation(module) end)
     end 
   end
 
   @doc """
-  Return nil if mod.documentation returns   
+  Return nil if mod.documentation returns :can_not_help
   """
   def can_help(mod,module) do
     {status, doc_list } = mod.documentation(module)

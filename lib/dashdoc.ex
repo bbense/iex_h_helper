@@ -7,7 +7,7 @@ defmodule DashDoc do
 		case is_elixir?(module) do
 			true -> System.cmd("open", [ "dash://elixir:"<>trim(module) ])
 				    { :found, [{ inspect(module), "Searching in Dash\n"}] }
-			_	 -> System.cmd("open", [ "dash://erlang:"<>Atom.to_string(module) ] ) 
+			_	 -> System.cmd("open", [ "dash://erl:"<>Atom.to_string(module) ] ) 
 				    { :found, [{ inspect(module), "Searching in Dash\n"}] } 
 		end 
 	end 

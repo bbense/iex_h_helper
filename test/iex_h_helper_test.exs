@@ -1,7 +1,23 @@
 defmodule IexHHelperTest do
   use ExUnit.Case
 
-  test "the truth" do
-    assert 1 + 1 == 2
-  end
+  test "h works for Elixir module" do
+  	Iex.HHelper.h(String)
+  end 
+
+  test "h works for Erlang Module" do 
+  	Iex.HHelper.h(:erlang)
+  end 
+
+  test "h barfs with wrong arguments" do 
+  	Iex.HHelper.h("foobar")
+  end 
+
+  test "get_docs works with :first" do 
+  	Iex.HHelper.get_docs(:erlang,[ElixirDoc, ErlangDoc, DashDoc], :first )
+  end 
+
+  test "get_docs works with :all" do
+  	Iex.HHelper.get_docs(:erlang,[ElixirDoc, ErlangDoc, DashDoc], :all)
+  end 
 end

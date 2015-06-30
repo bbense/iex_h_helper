@@ -11,14 +11,9 @@ defmodule ElixirDoc do
 	end 
 
 	def is_elixir?(module) do
-		module_name = Atom.to_string(module)
-		String.starts_with?(module_name, "Elixir.")
+		Atom.to_string(module) |>
+		String.starts_with?("Elixir.")
 	end
-
-	def trim(module) do
-		module_name = Atom.to_string(module)
-		String.replace(module_name, ~r/^Elixir./, "")
-	end 
 
 	def get_doc(module) do
 		{ _line, doc } = Code.get_docs(module, :moduledoc)

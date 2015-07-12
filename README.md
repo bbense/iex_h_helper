@@ -9,7 +9,7 @@ Define behaviours for modules that will backend the iex h command.
 
   `{:not_found, doc_list }` - Documentation not found, but could have been found by module if it existed.
 
-  `{:can_not_help, doc_list}` - Module does not know how to find documentation for arguements. 
+  `{:unknown, doc_list}` - Module does not know how to find documentation for arguements. 
 
   The intent is that helpers can be stacked and the iex command can do either `:first` or `:all`
   (i.e. attempt to get help using the first helper that returns either `:found` or `:not_found`, or

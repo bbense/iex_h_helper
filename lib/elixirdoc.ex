@@ -6,7 +6,7 @@ defmodule ElixirDoc do
 	def documentation(module) do 
 		case is_elixir?(module) do
 			true -> get_doc(module)
-			_	 -> { :can_not_help, [{inspect( module), ""}]} 
+			_	 -> { :unknown, [{inspect( module), ""}]} 
 		end 
 	end 
 

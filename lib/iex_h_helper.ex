@@ -9,7 +9,7 @@ defmodule Iex.HHelper do
 
   {:not_found, doc_list } - Documentation not found, but could have been found by module if 
                             it existed.
-  {:can_not_help, doc_list} - Module does not know how to find documentation for arguements. 
+  {:unknown, doc_list} - Module does not know how to find documentation for arguements. 
 
   The intent is that helpers can be stacked and the iex command can do either `:first` or `:all`
   (i.e. attempt to get help using the first helper that returns either :found or :not_found, or
@@ -146,12 +146,12 @@ defmodule Iex.HHelper do
   end
 
   @doc """
-  Return nil if mod.documentation returns :can_not_help
+  Return nil if mod.documentation returns :unknown
   """
   def can_help(mod,module) do
     {status, doc_list } = mod.documentation(module)
     case status do
-      :can_not_help -> nil 
+      :unknown      -> nil 
       _             -> [{status, doc_list}]
     end
   end 

@@ -2,7 +2,7 @@ defmodule IexHHelperTest do
   use ExUnit.Case
 
   test "h works for Elixir module" do
-  	Iex.HHelper.h(String)
+  	Iex.HHelper.h(Integer)
   end 
 
   test "h works for Erlang Module" do 

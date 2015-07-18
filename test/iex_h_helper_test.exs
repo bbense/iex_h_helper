@@ -13,6 +13,10 @@ defmodule IexHHelperTest do
   	Iex.HHelper.h("foobar")
   end 
 
+  test "h works for Elixir function" do
+    Iex.HHelper.h(Atom,:to_string)
+  end
+
   test "get_docs works with :first" do 
   	Iex.HHelper.get_docs(:erlang,[ElixirDoc, ErlangDoc, DashDoc], :first )
   end 

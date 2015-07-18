@@ -75,18 +75,13 @@ defmodule Iex.HHelper do
   #   dont_display_result
   # end
 
-  # def h(module, function) when is_atom(module) and is_atom(function) do
-  #   case h_mod_fun(module, function) do
-  #     :ok ->
-  #       :ok
-  #     :no_docs ->
-  #       puts_error("#{inspect module} was not compiled with docs")
-  #     :not_found ->
-  #       nodocs("#{inspect module}.#{function}")
-  #   end
-
-  #   dont_display_result
-  # end
+  def h(module, function) when is_atom(module) and is_atom(function) do
+     Iex.HHelper.get_docs(module,function, @helpers, @opts) |>
+        Enum.map( fn { _status, doc_list }  -> 
+                      Enum.map(doc_list, fn({header,doc})-> print_doc(header, doc) end ) 
+                  end )
+    dont_display_result
+  end
 
   # defp h_mod_fun(mod, fun) when is_atom(mod) do
   #   if docs = Code.get_docs(mod, :docs) do
@@ -146,6 +141,23 @@ defmodule Iex.HHelper do
   end
 
   @doc """
+  Map over module list and return a list of header, doc tuples.
+  """
+  def get_docs(module,function,helpers,opts) do
+    case opts do 
+      :first -> 
+        doc_list = helpers |> Enum.find_value( fn(mod) -> can_help(mod,module,function) end)
+        case doc_list do 
+          nil -> [{:not_found,{inspect(module),"No documentation found for #{inspect module}"}}]
+          _   -> doc_list
+        end 
+      _ -> 
+        helpers |> Enum.map( fn(mod) -> mod.documentation(module,function) end)
+        # What about nil result
+    end 
+  end
+
+  @doc """
   Return nil if mod.documentation returns :unknown
   """
   def can_help(mod,module) do
@@ -155,6 +167,18 @@ defmodule Iex.HHelper do
       _             -> [{status, doc_list}]
     end
   end 
+
+  @doc """
+  Return nil if mod.documentation returns :unknown
+  """
+  def can_help(mod,module,function) do
+    {status, doc_list } = mod.documentation(module,function)
+    case status do
+      :unknown      -> nil 
+      _             -> [{status, doc_list}]
+    end
+  end 
+
 
   # Temporary
   defp print_doc(heading, doc) do

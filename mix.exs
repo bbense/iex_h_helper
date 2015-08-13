@@ -27,6 +27,6 @@ defmodule IexHHelper.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    []
+    [ {:erlman, git: "https://github.com/bbense/erlman.git" }]
   end
 end

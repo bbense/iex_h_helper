@@ -35,11 +35,22 @@ defmodule ElixirDoc do
 		docs = Code.get_docs(module, :docs)
 		case docs do 
 			nil -> { :not_found, [{ "#{inspect module}.#{function}", "No documentation for #{inspect module}.#{function} found\n"}] }
-			_   -> find_doc(docs,function)
+			_   -> find_doc(docs, module, function)
 		end 
 	end 
 
-	def find_doc(docs, function) do
+	# This only finds the first, we need to match on all arities.
+	def find_doc(docs, module ,function) do
+		doc = docs |> Enum.find( fn(x) -> match_function(x,function) end ) 
+		case doc do 
+			nil -> { :not_found, [{ "#{inspect module}.#{function}", "No documentation for #{inspect module}.#{function} found\n"}] }
+			_   -> { :found, [{ "#{inspect module}.#{function}", elem(doc,4)}] }
+		end 
+	end 
 
+	# Not happy about magic numbers in elem.
+	defp match_function(docstring, function) do
+		{func, arity} = elem(docstring,0)
+		function == func 
 	end 
 end

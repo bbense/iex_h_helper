@@ -13,7 +13,7 @@ defmodule IexHHelperTest do
   	Iex.HHelper.h("foobar")
   end 
 
-  test "h works for Elixir function" do
+  test "h works for Elixir module and function" do
     Iex.HHelper.h(Atom,:to_string)
   end
 

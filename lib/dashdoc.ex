@@ -11,6 +11,15 @@ defmodule DashDoc do
 				    { :found, [{ inspect(module), "Searching in Dash\n"}] } 
 		end 
 	end 
+
+	def documentation(module, function) do 
+		case is_elixir?(module) do
+			true -> System.cmd("open", [ "dash://elixir:"<>trim(module)<>"."<>Atom.to_string(function) ])
+				    { :found, [{ inspect(module), "Searching in Dash\n"}] }
+			_	 -> System.cmd("open", [ "dash://erl:"<>Atom.to_string(module)<>":"<>Atom.to_string(function) ] ) 
+				    { :found, [{ inspect(module), "Searching in Dash\n"}] } 
+		end 
+	end 
 	
 	def is_elixir?(module) do
 		Atom.to_string(module) |>

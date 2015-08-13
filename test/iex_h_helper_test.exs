@@ -1,20 +1,22 @@
 defmodule IexHHelperTest do
   use ExUnit.Case
 
+  import ExUnit.CaptureIO
+
   test "h works for Elixir module" do
-  	Iex.HHelper.h(Integer)
+  	assert Iex.HHelper.h(Integer)
   end 
 
   test "h works for Erlang Module" do 
-  	Iex.HHelper.h(:erlang)
+  	assert Iex.HHelper.h(:erlang)
   end 
 
   test "h barfs with wrong arguments" do 
-  	Iex.HHelper.h("foobar")
+    assert String.contains? capture_io(fn -> Iex.HHelper.h("foobar") end) ,  "Invalid arguments for h helper"
   end 
 
   test "h works for Elixir module and function" do
-    Iex.HHelper.h(Atom,:to_string)
+    assert Iex.HHelper.h(Atom,:to_string)
   end
 
   test "get_docs works with :first" do 

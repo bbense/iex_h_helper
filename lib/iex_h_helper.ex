@@ -197,7 +197,7 @@ defmodule Iex.HHelper do
   end
 
   defp dont_display_result do
-    true
+    :"do not show this result in output"
   end 
 
 end

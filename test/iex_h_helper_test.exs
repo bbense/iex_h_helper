@@ -1,6 +1,8 @@
 defmodule IexHHelperTest do
   use ExUnit.Case
 
+  ExUnit.configure(exclude: [get_docs: true])
+
   import ExUnit.CaptureIO
 
   test "h works for Elixir module" do
@@ -30,5 +32,5 @@ defmodule IexHHelperTest do
   test "get_docs works with :all" do
   	[ unknown: _ , found: _ , found: _ ] = Iex.HHelper.get_docs(:erlang,[ElixirDoc, ErlangDoc, DashDoc], :all)
   end 
-  
+
 end

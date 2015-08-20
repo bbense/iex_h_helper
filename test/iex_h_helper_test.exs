@@ -21,6 +21,10 @@ defmodule IexHHelperTest do
     assert String.contains? capture_io(fn -> Iex.HHelper.h(Atom,:to_string) end), "Converts an atom to string"
   end
 
+  test "h works for Elixir module and function with multiple arities" do
+    Iex.HHelper.h(Kernel,:raise)
+  end 
+
   @tag :get_docs
   test "get_docs works with :first" do 
   	[found: [{ mod , doc }]] = Iex.HHelper.get_docs(:erlang,[ElixirDoc, ErlangDoc, DashDoc], :first )

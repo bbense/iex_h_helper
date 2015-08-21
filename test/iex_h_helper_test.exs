@@ -22,8 +22,15 @@ defmodule IexHHelperTest do
   end
 
   test "h works for Elixir module and function with multiple arities" do
-    Iex.HHelper.h(Kernel,:raise)
+    docs =  capture_io(fn -> Iex.HHelper.h(Kernel,:raise) end)
+    assert String.contains? docs,  "defmacro raise(msg)"
+    assert String.contains? docs,  "defmacro raise(exception, attrs)"
   end 
+
+  test "h works for Elixir module and function with zero arities" do
+    assert String.contains? capture_io(fn -> Iex.HHelper.h(Node,:get_cookie) end ), "def get_cookie()"
+  end 
+
 
   @tag :get_docs
   test "get_docs works with :first" do 

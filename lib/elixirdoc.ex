@@ -23,7 +23,7 @@ defmodule ElixirDoc do
 		String.starts_with?("Elixir.")
 	end
 
-	def get_doc(module) do
+	def get_doc(module) when is_atom(module) do
 		{ _line, doc } = Code.get_docs(module, :moduledoc)
 		case doc do 
 			nil -> { :not_found, [{ inspect(module), "No moduledocs found\n"}] }
@@ -31,7 +31,7 @@ defmodule ElixirDoc do
 		end 
 	end 
 
-	def get_doc(module, function) do
+	def get_doc(module, function) when is_atom(module) and is_atom(function) do
 		docs = Code.get_docs(module, :docs)
 		case docs do 
 			nil -> { :not_found, [{ "#{inspect module}.#{function}", "No documentation for #{inspect module}.#{function} found\n"}] }
@@ -39,14 +39,26 @@ defmodule ElixirDoc do
 		end 
 	end 
 
-	# This only finds the first, we need to match on all arities.
+	#  match on all arities.
 	def find_doc(docs, module ,function) do
-		doc = docs |> Enum.find( fn(x) -> match_function(x,function) end ) 
-		case doc do 
-			nil -> { :not_found, [{ "#{inspect module}.#{function}", "No documentation for #{inspect module}.#{function} found\n"}] }
-			_   -> { :found, [{ "#{inspect module}.#{function}", elem(doc,4)}] }
+		doc_list = docs |> Enum.filter( fn(x) -> match_function(x,function) end ) 
+		case doc_list do 
+			[] -> { :not_found, [{ "#{inspect module}.#{function}", "No documentation for #{inspect module}.#{function} found\n"}] }
+			_  -> { :found, get_docstrings(doc_list) }
 		end 
 	end 
+
+  defp get_docstrings(doc_list) do
+    for {{func, _arity}, _line, type, args, docstring } <- doc_list do
+      {"#{to_string(type)} "<>"#{to_string(func)}"<>stringify_args(args), docstring }
+    end
+  end 
+
+  # Turn this [{:string, [], nil}, {:char, [], nil}] into this (string, char)
+  defp stringify_args(args) do
+    inner = args |> Enum.map( fn(tp) -> to_string(elem(tp, 0 ) ) end ) |> Enum.join(", ")
+    "("<>inner<>")"
+  end 
 
 	# Not happy about magic numbers in elem.
 	defp match_function(docstring, function) do

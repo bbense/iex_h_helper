@@ -45,8 +45,8 @@ defmodule Iex.HHelper do
     case Code.ensure_loaded(module) do
       {:module, _} ->
         Iex.HHelper.get_docs(module, @helpers, @opts) |>
-        Enum.map( fn { _status, doc_list }  -> 
-                      Enum.map(doc_list, fn({header,doc})-> print_doc(header, doc) end ) 
+        Enum.map( fn { status, doc_list }  -> 
+                    display_doc_list(status, doc_list)  
                   end )
       {:error, reason} ->
         puts_error("Could not load module #{inspect module}, got: #{reason}")
@@ -77,8 +77,8 @@ defmodule Iex.HHelper do
 
   def h(module, function) when is_atom(module) and is_atom(function) do
      Iex.HHelper.get_docs(module,function, @helpers, @opts) |>
-        Enum.map( fn { _status, doc_list }  -> 
-                      Enum.map(doc_list, fn({header,doc})-> print_doc(header, doc) end ) 
+        Enum.map( fn { status, doc_list }  -> 
+                     display_doc_list(status, doc_list)  
                   end )
     dont_display_result
   end
@@ -119,9 +119,16 @@ defmodule Iex.HHelper do
   #     :not_found ->
   #       nodocs("#{inspect module}.#{function}/#{arity}")
   #   end
-
   #   dont_display_result
   # end
+
+  def h(module, function, arity) when is_atom(module) and is_atom(function) and is_integer(arity) do
+   Iex.HHelper.get_docs(module, function, arity, @helpers, @opts) |>
+        Enum.map( fn { status, doc_list }  -> 
+                       display_doc_list(status, doc_list) 
+                  end )
+    dont_display_result
+  end 
 
   @doc """
   Map over module list and return a list of header, doc tuples.
@@ -158,6 +165,23 @@ defmodule Iex.HHelper do
   end
 
   @doc """
+  Map over module list and return a list of header, doc tuples.
+  """
+  def get_docs(module,function,arity,helpers,opts) do
+    case opts do 
+      :first -> 
+        doc_list = helpers |> Enum.find_value( fn(mod) -> can_help(mod,module,function,arity) end)
+        case doc_list do 
+          nil -> [{:not_found,{inspect(module),"No documentation found for #{inspect module}"}}]
+          _   -> doc_list
+        end 
+      _ -> 
+        helpers |> Enum.map( fn(mod) -> mod.documentation(module,function,arity) end)
+        # What about nil result
+    end 
+  end
+
+  @doc """
   Return nil if mod.documentation returns :unknown
   """
   def can_help(mod,module) do
@@ -179,6 +203,25 @@ defmodule Iex.HHelper do
     end
   end 
 
+  @doc """
+  Return nil if mod.documentation returns :unknown
+  """
+  def can_help(mod,module,function,arity) do
+    {status, doc_list } = mod.documentation(module,function,arity)
+    case status do
+      :unknown      -> nil 
+      _             -> [{status, doc_list}]
+    end
+  end 
+
+  defp display_doc_list(status, doc_list) do
+    case status do 
+      :found -> 
+        Enum.map(doc_list, fn({header,doc})-> print_doc(header, doc) end ) 
+      :not_found -> 
+        Enum.map(doc_list, fn({header,doc})-> print_error(header, doc) end ) 
+    end 
+  end
 
   # Temporary
   defp print_doc(heading, doc) do
@@ -191,6 +234,11 @@ defmodule Iex.HHelper do
       IO.puts doc
     end
   end
+
+  defp print_error(_heading, doc) do
+    doc = doc || ""
+    puts_error(doc)
+  end 
 
   defp puts_error(string) do
     IO.puts IEx.color(:eval_error, string)

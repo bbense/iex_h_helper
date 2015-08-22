@@ -17,6 +17,12 @@ defmodule ErlangDoc do
     end 
   end 
 
+  def documentation(module, function,arity) do 
+    case is_erlang?(module) do
+      true -> get_doc(module, function,arity)
+      _  -> { :unknown, [{inspect(module), "" }]} 
+    end 
+  end 
   
   def is_erlang?(module) do
     case is_elixir?(module) do 
@@ -35,6 +41,10 @@ defmodule ErlangDoc do
   end 
 
   def get_doc(module, function) do 
+    { :found, [{ inspect(module), "Found the erlang man page\n"}] }
+  end 
+
+   def get_doc(module, function,arity) do 
     { :found, [{ inspect(module), "Found the erlang man page\n"}] }
   end 
 

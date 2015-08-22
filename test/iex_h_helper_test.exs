@@ -31,6 +31,15 @@ defmodule IexHHelperTest do
     assert String.contains? capture_io(fn -> Iex.HHelper.h(Node,:get_cookie) end ), "def get_cookie()"
   end 
 
+  test "h works for Elixir module and function with specific arity" do
+    docs =  capture_io(fn -> Iex.HHelper.h(Kernel, :raise, 1) end)
+    assert String.contains? docs,  "defmacro raise(msg)"
+  end 
+
+  test "h reports correct error message for missing function name" do 
+    assert capture_io(fn -> Iex.HHelper.h(Integer,:foo) end) == "\e[31mNo documentation for Integer.foo found\n\e[0m\n"
+  end 
+
 
   @tag :get_docs
   test "get_docs works with :first" do 

@@ -83,17 +83,6 @@ defmodule Iex.HHelper do
     dont_display_result
   end
 
-  # defp h_mod_fun(mod, fun) when is_atom(mod) do
-  #   if docs = Code.get_docs(mod, :docs) do
-  #     result = for {{f, arity}, _line, _type, _args, doc} <- docs, fun == f, doc != false do
-  #       h(mod, fun, arity)
-  #     end
-
-  #     if result != [], do: :ok, else: :not_found
-  #   else
-  #     :no_docs
-  #   end
-  # end
 
   # @doc """
   # Prints the documentation for the given function

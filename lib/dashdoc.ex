@@ -1,6 +1,8 @@
 defmodule DashDoc do
 	@moduledoc """
-	Stub module for testing. 
+	Search for Documentation using Dash URL's and the open command. 
+
+	Only intended to work on OS X machines with Dash installed. 
 	"""
 
 	def documentation(module) do 
@@ -15,18 +17,23 @@ defmodule DashDoc do
 	def documentation(module, function) do 
 		case is_elixir?(module) do
 			true -> System.cmd("open", [ "dash://elixir:"<>trim(module)<>"."<>Atom.to_string(function) ])
-				    { :found, [{ inspect(module), "Searching in Dash\n"}] }
+				    { :found, [{"#{inspect(module)}.#{to_string(function)}", "Searching in Dash\n"}] }
 			_	 -> System.cmd("open", [ "dash://erl:"<>Atom.to_string(module)<>":"<>Atom.to_string(function) ] ) 
-				    { :found, [{ inspect(module), "Searching in Dash\n"}] } 
+				    { :found, [{"#{inspect(module)}.#{to_string(function)}", "Searching in Dash\n"}] } 
 		end 
+	end
+
+	# No way to specify arity on dash search url.
+	def documentation(module, function, _arity) do 
+		documentation(module, function)
 	end 
-	
-	def is_elixir?(module) do
+
+	defp is_elixir?(module) do
 		Atom.to_string(module) |>
 		String.starts_with?("Elixir.")
 	end
 
-	def trim(module) do
+	defp trim(module) do
 		Atom.to_string(module) |>
 		String.replace( ~r/^Elixir./, "")
 	end 
